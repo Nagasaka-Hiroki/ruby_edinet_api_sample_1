@@ -269,3 +269,54 @@ Mock A → module B →　結果
 
 [ #stub ｜Class: Object — Documentation for minitest (5.18.0) ](https://www.rubydoc.info/gems/minitest/Object#stub-instance_method)
 
+スタブを作る練習をする。上記に加えて下記も少し参考にした。
+
+- [minitestでモック、スタブする（RR、WebMock、MiniTest::Mockを使う） - Qiita](https://qiita.com/nobu09/items/bda6205a8f170a1887d7#minitestmock)
+
+以下のような例を作成した。
+
+```ruby
+require 'minitest/autorun'
+require 'date'
+
+class StubSample < Minitest::Test
+    def test_today_stub
+        pp Date.today
+        
+        Date.stub :today, Date.new(2000,1,1) do
+            pp Date.today
+        end
+    end
+end
+```
+
+結果は以下
+
+```ruby
+$ ruby prc/prc_stubs_test.rb 
+Run options: --seed 5574
+
+# Running:
+
+#<Date: 2023-03-07 ((2460011j,0s,0n),+0s,2299161j)>
+#<Date: 2000-01-01 ((2451545j,0s,0n),+0s,2299161j)>
+.
+
+Finished in 0.016600s, 60.2394 runs/s, 0.0000 assertions/s.
+
+1 runs, 0 assertions, 0 failures, 0 errors, 0 skips
+```
+
+おおよその使い方は理解できた。
+
+データを取得するためのスクリプトを書く。以下が参考になる。
+
+- [シェルスクリプトで開始日から終了日までの日付をYYYYMMDD形式で一覧出力する｜ゲンゾウ用ポストイット](https://genzouw.com/entry/2019/07/01/083003/1637/)
+
+
+これで日時のはじめと終わりを指定して、その区間のデータをcurlで取得できるようになった。保存形式は以下。
+
+```
+http_dummy/list_{日時}_{データの種類}.json
+```
+

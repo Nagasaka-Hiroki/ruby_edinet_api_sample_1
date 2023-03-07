@@ -10,14 +10,15 @@ class DocumentListTest < Minitest::Test
     def test_show_document_list
         date="2019-04-01"
 
-        #show_document_list(date)       #本物 ネットワークにつながるのでコメントアウト
-        #pseudo_show_document_list(date)#偽物 ネットワークにつながらない。これを呼び出すのは問題ない。
+        #show_document_list(date)       #本物 ネットワークを経由してデータを取得する。
+        #pseudo_show_document_list(date)#偽物 ネットワークにつながらない。事前にダウンロードしたファイルから展開。
 
         #スタブでオーバーライドする。
         #本物の名前で偽物を呼び出せる。
         DocumentList.stub :show_document_list, pseudo_show_document_list(date) do
-            pp show_document_list(date)
+            @list=show_document_list(date)
         end
+        assert_equal @list, show_document_list(date), "show_document_listが期待した動作と異なります。"
     end
 
     #入れ子状態のメソッドのスタブ
@@ -27,8 +28,9 @@ class DocumentListTest < Minitest::Test
         period=Range.new(Date.new(2019,4,1),Date.new(2019,4,5))
         #スタブでオーバーライドする。
         DocumentList.stub :show_document_list_in_range, pseudo_show_document_list_in_range(period) do
-            pp show_document_list_in_range(period)
+            @list=show_document_list_in_range(period)
         end
+        assert_equal @list, show_document_list_in_range(period), "show_document_list_in_rangeが期待した動作と違います。"
     end
 
     private
@@ -45,7 +47,7 @@ class DocumentListTest < Minitest::Test
 
     #ファイルを連続して読み込んでいく。
     def pseudo_show_document_list_in_range(period,type=1)
-        period.each do |date|
+        period.map do |date|
             DocumentList.stub :show_document_list, pseudo_show_document_list(date) do
                 show_document_list(date)
             end

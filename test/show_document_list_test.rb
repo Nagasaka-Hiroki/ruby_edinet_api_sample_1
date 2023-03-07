@@ -3,10 +3,10 @@ require 'date'
 require_relative '../lib/DocumentList/document_list'
 include DocumentList
 
+#目視で確認。
 #ネットワークに接続するので頻繁に実行しないこと。
 class DocumentListTest < Minitest::Test
     def test_show_document_list
-        #目視で確認。
         pp show_document_list("2019-04-01")
         #pp show_document_list("2019-04-01",2)
     end

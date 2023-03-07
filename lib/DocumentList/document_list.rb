@@ -1,6 +1,7 @@
 require 'net/http'
 require 'uri'
 require 'json'
+require 'date'
 
 module DocumentList
     #show_document_list
@@ -22,13 +23,11 @@ module DocumentList
     #第一引数：検索区間 class Range
     #第二引数：所得情報
     def show_document_list_in_range(search_period, type=nil)
-        #データを保存する配列
-        document_list=[]
         #ネットワークに接続して情報を取得
-        search_period.each do |date|
-            document_list.push(show_document_list(date,type))
+        #配列を返す。
+        search_period.map do |date|
+            show_document_list(date,type)
         end
-        document_list
     end
 
     #

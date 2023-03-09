@@ -320,3 +320,56 @@ Finished in 0.016600s, 60.2394 runs/s, 0.0000 assertions/s.
 http_dummy/list_{日時}_{データの種類}.json
 ```
 
+スタブを書くことができたが、テストを新しいファイルで書くたびに再定義するのは面倒なので別ファイルでモジュールとして作る。
+
+- [ Class: Object — Documentation for minitest (5.18.0) ](https://www.rubydoc.info/gems/minitest/Object#stub-instance_method)
+
+上記によれば`#stub`メソッドは以下の仕様だそうだ。
+
+```ruby
+#stub(name, val_or_callable, *block_args, **block_kwargs, &block) ⇒ Object
+```
+
+引数の意味は読んでいくと以下のとおりだと思う。
+
+|引数|説明|
+|-|-|
+|name|差し替えるもとのメソッド名|
+|val_or_callable|差し替えるもの。変数でもメソッドでもいい|
+|*block_args|ブロックに渡す引数（配列）|
+|**block_kwargs|ブロックに渡す引数（ハッシュを展開）|
+|&block|処理の内容を示すもの。ここでnameの関数を実行するとval_or_callableになる。|
+
+ハッシュの部分の解釈が間違っているかもしれないが読んでいくとそう思う。間違っている場合は修正する。
+
+---
+
+スタブの使い方のミスを発見
+
+間違い
+```ruby
+include DocumentList
+def test_show_document_list
+    date="2019-04-01"
+    DocumentList.stub :show_document_list, pseudo_show_document_list(date) do
+        @list=show_document_list(date)
+    end
+    assert_equal @list, show_document_list(date), "show_document_listが期待した動作と異なります。"
+end
+```
+正しい
+```ruby
+include DocumentList
+def test_show_document_list
+    date="2019-04-01"
+    DocumentList.stub :show_document_list, pseudo_show_document_list(date) do
+        @list=DocumentList.show_document_list(date)
+    end
+    assert_equal @list, show_document_list(date), "show_document_listが期待した動作と異なります。"
+end
+```
+
+今回はクラスの外でモジュールをインクルードしている。その場合、単純に関数名を書くとスタブで入れ替える前のものが出る。そのため注意が必要。
+
+---
+

@@ -10,7 +10,6 @@ class StubSample < Minitest::Test
         end
     end
 
-
     def test_another_stub
         a=[2000,1,1]
         b=[2000,12,1]
@@ -20,5 +19,19 @@ class StubSample < Minitest::Test
             pp Date.new(*a)
         end
     end
-    
+
+    def test_stub_func
+        a=[2000,1,1]
+        b=[2000,12,1]
+        pp Date.new(*a)
+
+        Date.stub :new, Date.new(*b) do
+            pp today(*a)
+        end
+    end
+
+    private
+    def today(*a)
+        Date.new(*a)
+    end
 end

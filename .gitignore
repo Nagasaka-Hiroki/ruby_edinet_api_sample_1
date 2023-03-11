@@ -2,3 +2,5 @@
 XBRL/
 zips/
 http_dummy/*.json
+code_list/*.zip
+code_list/*.csv

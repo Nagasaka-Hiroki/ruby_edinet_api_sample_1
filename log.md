@@ -373,3 +373,56 @@ end
 
 ---
 
+上記の通りスタブの使い方を修正できた。これでしばらくネットワークに負荷をかけずにテストができるはず。
+
+スタブのしようとして、val_or_callableの部分は関数が入るとその場で一考して変数（返り値）になるようだ。
+
+スタブを関数に変換した。ネットワークなしでも動作したのでスタブ作成はうまく行っているはず。
+
+しかし呼び出しの関数の中にスタブが必要な場合がうまく行かない。  
+→以下のようにしたところうまく行った。
+
+```ruby
+def test_serch_data
+    #事前にhttp_dummy/get_data_list.shを実行する。
+    #期間を５日間にしてテスト。
+    period=Range.new(Date.new(2019,4,1),Date.new(2019,4,2))
+    #スタブを使うのでブロック内に記述する。
+    #search_data内ではtype=2となる。
+    stub_show_document_list_in_period(period,2) do
+        pp DocumentList.serch_data(nil,period)
+    end
+end
+```
+
+作っているとfilerNameで必要な情報を絞るのは難しそう。仕様書を読んでいると以下のリンクからダウンロードしたcsvファイルを見ると良さそう。
+
+- [EDINETタクソノミ及びコードリストダウンロード指定画面](https://disclosure2.edinet-fsa.go.jp/weee0010.aspx)
+
+この中のEDINET コードリスト、ファンドコードリストを見る。ファイルを読み込むと文字化けしていたがshift-jisにするときれいになった。
+
+これら２つに関しては以下が参考になる。
+
+- [EDINET概要書](https://www.fsa.go.jp/singi/edinet/20071226/03.pdf)
+
+少なくとも財務諸表を読む目的ではエディネットコードがわかれば良さそうだと感じる。そのためcsvファイルから特定できないか考える。
+
+エンコードの問題にぶつかった。調べるといかがヒットした。
+
+- [class Encoding (Ruby 3.2 リファレンスマニュアル)](https://docs.ruby-lang.org/ja/latest/class/Encoding.html#C_-C-P932)
+- [csvファイルを読み込んで、UTF-8に変換する時のエラー](https://teratail.com/questions/230233)
+
+上記によれば以下らしい。
+
+> Windows-31J、Windows で用いられる、シフトJIS亜種で、CP932とも言います。
+
+つまりもともとShift_JIS出ない可能性がある。Windows-31Jを使ってみる。
+
+これでもだめだった。  
+→ファイルを一度違うコードで保存していることが問題だった。再解凍した結果問題なく表示された。
+
+ハッシュのキーをstringからsymbolに変換する方法を検索すると以下がヒットした。
+
+- [Hashのキーを文字列からシンボルに変換する - Qiita](https://qiita.com/zakuroishikuro/items/5b08d65d4fef79982f19)
+
+よく考えるとかんたんだった。単純に配列のキーの部分にto_symを使うだけ。

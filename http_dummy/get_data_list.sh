@@ -3,7 +3,8 @@
 start=20190401
 #終了日時
 end=20190405
-type=1
+#入手するデータを切り替える
+type=2
 
 #データを指定した日時で取得する。
 for((D=start; D<=end; D=$(date -d "${D} + 1days" +%Y%m%d))); do

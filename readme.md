@@ -17,3 +17,14 @@ unzip S-XXXXXX.zip
 ```
 
 この中にある`xbrl`の拡張子のファイルが目的のファイル。
+
+## プログラムから使う
+　プログラムを使って利用する。
+
+### 書類一覧API
+　取得したい書類の情報を得るプログラムを作成した。rubyのmoduleとして作成した。以下に概要を示す。
+
+|Module#method|入力|出力|
+|-|-|-|
+|DocumentList#arrange_search_data|提出者名、探索期間|エディネットコードごとに分けた書類情報をハッシュ形式で返却|
+|DocumentList#show_doc_info_table|提出者名、探索期間|DocumentList#arrange_search_dataの結果をターミナルに表示する。|

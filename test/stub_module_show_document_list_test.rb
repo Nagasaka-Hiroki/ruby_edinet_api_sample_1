@@ -21,12 +21,12 @@ class DocumentListTest < Minitest::Test
     end
 
     #入れ子状態のメソッドのスタブ
-    def test_show_document_list_in_period
+    def test_show_document_list_in_range
         #事前にhttp_dummy/get_data_list.shを実行する。
         #日時の範囲を指定する。5日間のデータを対象にする。
         period=Range.new(Date.new(2019,4,1),Date.new(2019,4,5))
         #DocumentListStubのスタブを使う。
-        stub_show_document_list_in_period(period) do
+        stub_show_document_list_in_range(period) do
             @list=DocumentList.show_document_list_in_range(period)
         end
         pp @list #時間に依存する箇所があるのでここは目視で確認する。

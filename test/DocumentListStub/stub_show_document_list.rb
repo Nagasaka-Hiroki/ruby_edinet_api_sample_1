@@ -14,8 +14,8 @@ module DocumentListStub
         DocumentList.stub :show_document_list, pseudo_show_document_list(date,type), &block
     end
 
-    #DocumentList.show_document_list_in_period のスタブ
-    def stub_show_document_list_in_period(period,type=1,&block)
+    #DocumentList.show_document_list_in_range のスタブ
+    def stub_show_document_list_in_range(period,type=1,&block)
         DocumentList.stub :show_document_list_in_range, pseudo_show_document_list_in_range(period,type), &block
     end
 

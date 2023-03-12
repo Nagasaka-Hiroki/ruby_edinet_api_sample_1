@@ -37,23 +37,33 @@ module DocumentList
         end
     end
 
-    #エディネットコードを特定する。
+    #エディネットコードの候補を探す。
     #find_edinet_code
-    def find_edinet_code(name=nil)
+    def find_edinet_code_candidate(name=nil) #nameはstring
         #コードと提出者の対応をとったハッシュを取得する。
-        edinet_code_list=edinetcode_and_name_relationship(edinet_code_list_file_path)
+        #ファイルが大きいので再実行されないようにする。
+        @edinet_code_list||=edinetcode_and_name_relationship(edinet_code_list_file_path)
+
+        #引数に指定したワードに近いものをリストアップする。
+        #パターンを作成する。
+        pattern=Regexp.new(name)
+        #返り値は配列。マッチしなければ空の配列が入る。
+        matched_list=@edinet_code_list.find_all { |record| pattern.match(record[1].to_s) }
+        matched_list.map do |ar|
+            { edinetCode: ar[0].to_sym, filerName: ar[1].to_sym }
+        end
     end
 
-    #欲しい会社名のデータを見る。
+    #メタデータを取得して扱いやすく整形する。
     #探索期間は指定なしの場合実行時から一年前を範囲とする。
-    def serch_data(name, period=Range.new(Date.today << 12, Date.today))
+    def arrange_data(period=Range.new(Date.today << 12, Date.today))
         #引数をもとにデータを取得し目的のデータを探す。
         #会社情報を見るためtype=2となる。
         data=show_document_list_in_range(period,2)
 
         #dataの中からほしいデータがあるか探す。
-        #必要なのは日付（どれが最新か？）、会社名、書類管理番号である。これらを取り出していく。
-        essence_data_list = data.map do |data_list|
+        #必要なのは日付（どれが最新か？）、会社名、書類管理番号、EDINETコードである。これらを取り出していく。
+        essense_data = data.map do |data_list|
             next if data_list[:metadata][:status]!="200" #取得に成功していなければ次へ。
             #いつ提出されたか知るために日付を取り出す。
             metadata_date=data_list[:metadata][:parameter][:date] #日付
@@ -61,17 +71,114 @@ module DocumentList
             result = data_list[:results].map do |res| #データ本体
                 next unless res[:docID] #nilなら処理をしない
                 next unless res[:filerName] #企業名が空白なら処理しない
-                {docID: res[:docID], filerName: res[:filerName]}
+                #有価証券報告書、四半期報告書、半期報告書のみを今回表示する。
+                next unless res[:docTypeCode].to_i==120 || res[:docTypeCode].to_i==140 || res[:docTypeCode].to_i==160 
+                { 
+                  docID:          res[:docID].to_sym,         #書類管理番号
+                  seqNumber:      res[:seqNumber],            #連番、ファイル日付ごとの連番
+                  xbrlFlag:       res[:xbrlFlag].to_i,        #xbrl形式ファイルがあるか？(1ならある)
+                  docTypeCode:    res[:docTypeCode].to_i,     #書類種別コード
+                  docDescription: res[:docDescription],       #提出書類概要
+                  submitDateTime: res[:submitDateTime],       #提出日時
+                  filerName:      res[:filerName].to_sym,     #提出者名
+                  edinetCode:     res[:edinetCode].to_sym     #提出者 EDINETコード
+                }
             end
             #結果をまとめて返す。
             [metadata_date, result]
         end
+        #nilを除外する。
+        essense_data.each { |ar| ar[1].compact! }
     end
 
+    #find_edinet_code_candidateとarrange_dataをもとに書類管理番号を取得する。
+    #別に一つである必要は無いが、一つに対する機能にして繰り返しをして複数に対応する。
+    def search_data(name=nil, period=nil)
+        #書類一覧APIでperiodの区間のデータを取得する。
+        data_list=arrange_data(period)
+        #調べたい企業名or提出者名を指定してEDINETコードの候補を出す。
+        edinet_code_list=find_edinet_code_candidate(name)
+        #EDINETコードの候補からメタデータを絞り込む。
+        data_list.map do |data|
+            matched_list=edinet_code_list.map do |code|
+                data[1].find_all do |res|
+                    res[:edinetCode]==code[:edinetCode]
+                end
+            end
+            matched_list.delete([]).flatten!
+            [data[0], matched_list]
+        end
+    end
+
+    #search_dataを使って書類管理医番号と書類概要、書類種別、提出日、提出者名などをEDINETコードを主体として整理する。
+    def arrange_search_data(name=nil, period=nil)
+        #絞り込んだデータを取得する。
+        searched_data=search_data(name, period)
+        #エディネットコードのリストを取得する。
+        edinet_code_list=searched_data.map do |x| #u[0] はクエリの日付が入っている。
+            x[1].map do |y|
+                y.map do |z|
+                    z[:edinetCode]
+                end
+            end
+        end.flatten.uniq
+        #EDINETコードをキーとしてその他のデータを整理したハッシュを作成する。
+        searched_data=edinet_code_list.map do |edinet_code|
+            document_info=searched_data.map do |x|
+                x[1].map do |y|
+                    y.find_all do |z|
+                        z[:edinetCode]==edinet_code
+                    end
+                end
+            end.flatten.delete_if { |ar| ar.empty? }
+            [edinet_code, document_info]
+        end.to_h
+        #ハッシュを整理する。arrange_dataでも整理したが、ここではより小さくする。
+        edinet_code_list.map do |edinet_code|
+            #書類取得APIで使用するdocIDと、提出日、提出者、書類概要、書類種別を整理する。
+            res=searched_data[edinet_code].map do |doc_data|
+                next unless doc_data[:xbrlFlag]==1 #XBRLファイルがない場合取得しないので除外。
+                doc_type_name=if doc_data[:docTypeCode]==120
+                                  "有価証券報告書"
+                              elsif doc_data[:docTypeCode]==140
+                                  "四半期報告書"
+                              elsif doc_data[:docTypeCode]==160
+                                  "半期報告書"
+                              else
+                                  "その他"
+                              end
+                {
+                    filerName:      doc_data[:filerName],      #提出者
+                    docDescription: doc_data[:docDescription], #書類概要
+                    docTypeName:    doc_type_name,             #書類種別
+                    docID:          doc_data[:docID],          #書類管理番号
+                }
+            end
+            [edinet_code, res]
+        end.to_h
+    end
+
+    #書類一覧APIの結果を見やすく整理する。
+    def show_doc_info_table(name=nil, period=nil)
+        table_data=arrange_search_data(name,period)
+        #|EDINET_CODE|filerName|docDescription|docTypeName|docID| の順で表示する。
+        
+        table_data.each do |key, val|
+            puts "|提出者：#{val[0][:filerName]}(#{key})|"
+            puts "|-------------------------------------"
+            puts "|書類概要|書類種別|書類ID|"
+            val.each do |x|
+                puts "|#{x[:docDescription]}| #{x[:docTypeName]}| #{x[:docID]}|"
+            end
+            puts ""
+        end
+    end
+    
     private
     #エディネットのEDINETコードと提出者名の対応を取る。
     #EDINETコードは1列目、提出者名は7列目
     #csvファイルの2行目まではヘッダになっている。2行目がcsvのヘッダ。
+    #比較的重いので頻繁に実行しない。nilガードで代入を防ぐなどで減らす。
     def edinetcode_and_name_relationship(file_path=nil)
         code_list=read_edinet_code_list(file_path)#一覧を取得する。
         code_list.slice!(0,1)                     #説明を取り除く。
@@ -87,6 +194,7 @@ module DocumentList
         #EDINETコードを0、提出者名を1として配列にし、それをハッシュに変換する。
         csv_table.to_a.map { |record| [record[0].to_sym, record[1].to_sym] }.to_h #ハッシュに変換して返す。
     end
+
     #エディネットコードの一覧を取得する。
     def read_edinet_code_list(file_path=nil)
         File.open(file_path) do |f|
@@ -95,6 +203,7 @@ module DocumentList
             end
         end
     end
+
     #リポジトリの絶対パスを計算する。
     def repository_dir_path
         File.dirname(File.dirname(File.dirname(File.expand_path(__FILE__))))

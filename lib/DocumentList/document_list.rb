@@ -161,15 +161,28 @@ module DocumentList
     def show_doc_info_table(name=nil, period=nil)
         table_data=arrange_search_data(name,period)
         #|EDINET_CODE|filerName|docDescription|docTypeName|docID| の順で表示する。
-        
+        #表の幅を計算する。
+        table_width_info=cal_table_length(table_data)
+        #幅に合わせて表示する。
         table_data.each do |ar|
-            puts "|提出者：#{ar[0][1]}(#{ar[0][0]})|"
-            puts "|-------------------------------------"
-            puts "|書類概要|書類種別|書類ID|"
+            header_content="[ 提出者：#{ar[0][1]}(#{ar[0][0]})" #ヘッダの内容
+            #表の幅の数からヘッダの内容の数を引いて空白の数を計算する。
+            num_header_space=table_width_info[0]-cal_word_width(header_content+"]")
+            border="["+"-"*(table_width_info[0]-cal_word_width("[]"))+"]"
+            puts border
+            puts header_content+" "*num_header_space+"]"
+            puts "["+"-"*(table_width_info[0]-cal_word_width("[]"))+"]"
+            puts "["+@col_1_title+" "*(table_width_info[1][0]-cal_word_width(@col_1_title))+"|"+
+                     @col_2_title+" "*(table_width_info[1][1]-cal_word_width(@col_2_title))+"|"+
+                     @col_3_title+" "*(table_width_info[1][2]-cal_word_width(@col_3_title))+"]"
+            puts border
+            #表本体を描画する。
             ar[1].each do |x|
-                puts "|#{x[:docDescription]}|#{x[:docTypeName]}|#{x[:docID]}|"
+                puts "["+"#{x[:docDescription]}"+" "*(table_width_info[1][0]-cal_word_width(x[:docDescription].to_s))+
+                     "|"+"#{x[:docTypeName   ]}"+" "*(table_width_info[1][1]-cal_word_width(x[:docTypeName   ].to_s))+
+                     "|"+"#{x[:docID         ]}"+" "*(table_width_info[1][2]-cal_word_width(x[:docID         ].to_s))+"]"
             end
-            puts ""
+            puts border
         end
     end
     
@@ -207,4 +220,66 @@ module DocumentList
     def repository_dir_path
         File.dirname(File.dirname(File.dirname(File.expand_path(__FILE__))))
     end
+
+    #表の描画のための関数を整理する。
+    #表中の最大の幅を計算する。
+    def cal_table_length(data=nil)
+        #ヘッダの長さを計算する。
+        header_template="[ 提出者：()]"
+        header_length=cal_word_width(header_template)
+        max_header_title_length=0 #最大の長さを格納する変数。
+        data.each do |ar|
+            length=cal_word_width("#{ar[0][0]}#{ar[0][1]}")
+            max_header_title_length = length > max_header_title_length ?
+                                      length : max_header_title_length
+        end
+        header_length+=max_header_title_length #最終的なヘッダの長さ
+
+        #表本体の長さを計算する。
+        @col_1_title, @col_2_title, @col_3_title = " 書類概要 "," 書類種別 "," 書類ID "
+        table_body_tamplate="[#{@col_1_title}|#{@col_2_title}|#{@col_3_title}]"
+        #列の最大数を計算
+        col_max_num_list=[[:docDescription,0],[:docTypeName,0],[:docID,0]] #先に宣言する。
+        data.each do |ar|
+            col_max_num_list.each do |col_num|
+                #配列の中から最大の値を取り出す。配列→整数になる。
+                max_lenght=ar[1].map {|x| cal_word_width(x[col_num[0]].to_s) }.max
+                col_num[1]= max_lenght > col_num[1] ? max_lenght : col_num[1]
+            end
+        end
+        #各列のタイトルの長さを格納する。
+        title_length_list=[[:docDescription, cal_word_width(@col_1_title)],
+                           [:docTypeName,    cal_word_width(@col_2_title)],
+                           [:docID,          cal_word_width(@col_3_title)]]
+        #タイトルの長さと計算した長さを比較して大きいほうを格納する。
+        col_max_num_list.each_index do |i|
+            col_max_num_list[i][1]=col_max_num_list[i][1]>title_length_list[i][1] ?
+                                   col_max_num_list[i][1]:title_length_list[i][1]
+        end
+        #差分を調整する。
+        #表の本体の長さを計算する。
+        table_body_length=col_max_num_list.map { |ar| ar[1] }.sum(cal_word_width("||||"))
+        #表本体の長さとヘッダの長さを比較して調整する。
+        if table_body_length > header_length #表本体の長さが大きい場合。
+            #単純に代入する。
+            header_length=table_body_length
+        else#表のヘッダが長い場合 
+            #書類概要に差分を入れる。
+            col_max_num_list[0][1]+= header_length - table_body_length
+        end
+        col_max_num_list=col_max_num_list.map { |ar| ar[1] }
+        #結果を配列として返す。
+        [header_length, col_max_num_list]
+    end
+    #文字の幅を計算する
+    def cal_letter_width(letter=nil)
+        letter.bytesize==1 ? 1 : 2
+    end
+    #文字列の幅を計算する
+    def cal_word_width(word=nil)
+        length=0
+        word.each_char { |c| length+=cal_letter_width(c) }
+        length
+    end
+    #
 end

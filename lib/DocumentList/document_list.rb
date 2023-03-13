@@ -110,7 +110,7 @@ module DocumentList
         end
     end
 
-    #search_dataを使って書類管理医番号と書類概要、書類種別、提出日、提出者名などをEDINETコードを主体として整理する。
+    #search_dataを使って書類管理医番号と書類概要、書類種別、提出者名などをEDINETコードを主体として整理する。
     def arrange_search_data(name=nil, period=nil)
         #絞り込んだデータを取得する。
         searched_data=search_data(name, period)
@@ -148,14 +148,13 @@ module DocumentList
                                   "その他"
                               end
                 {
-                    filerName:      doc_data[:filerName],      #提出者
                     docDescription: doc_data[:docDescription], #書類概要
                     docTypeName:    doc_type_name,             #書類種別
                     docID:          doc_data[:docID],          #書類管理番号
                 }
             end
-            [edinet_code, res]
-        end.to_h
+            [ [edinet_code.to_sym,@edinet_code_list[edinet_code]], res ]
+        end
     end
 
     #書類一覧APIの結果を見やすく整理する。
@@ -163,12 +162,12 @@ module DocumentList
         table_data=arrange_search_data(name,period)
         #|EDINET_CODE|filerName|docDescription|docTypeName|docID| の順で表示する。
         
-        table_data.each do |key, val|
-            puts "|提出者：#{val[0][:filerName]}(#{key})|"
+        table_data.each do |ar|
+            puts "|提出者：#{ar[0][1]}(#{ar[0][0]})|"
             puts "|-------------------------------------"
             puts "|書類概要|書類種別|書類ID|"
-            val.each do |x|
-                puts "|#{x[:docDescription]}| #{x[:docTypeName]}| #{x[:docID]}|"
+            ar[1].each do |x|
+                puts "|#{x[:docDescription]}|#{x[:docTypeName]}|#{x[:docID]}|"
             end
             puts ""
         end

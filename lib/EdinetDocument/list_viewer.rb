@@ -3,15 +3,14 @@ require 'uri'
 require 'json'
 require 'date'
 require 'csv'
+require_relative '../common'
 
 module EdinetDocument
     #書類一覧APIを使って書類一覧情報を取得する。
     module ListViewer
-        #ファイルバスを計算する
-        def edinet_code_list_file_path
-            #エディネットコードが記述されているファイルのパスを記述する。
-            repository_dir_path+"/code_list/EdinetcodeDlInfo.csv"
-        end
+        include Common
+        #ファイルバスを取得する。
+        EDINET_CODE_LIST_FILE_PATH="#{Common.repository_dir_path}/code_list/EdinetcodeDlInfo.csv"
     
         #書類一覧API　JSONからHashに変換
         #show_document_list
@@ -44,7 +43,7 @@ module EdinetDocument
         def find_edinet_code_candidate(name=nil) #nameはstring
             #コードと提出者の対応をとったハッシュを取得する。
             #ファイルが大きいので再実行されないようにする。
-            @edinet_code_list||=edinetcode_and_name_relationship(edinet_code_list_file_path)
+            @edinet_code_list||=edinetcode_and_name_relationship(EDINET_CODE_LIST_FILE_PATH)
     
             #引数に指定したワードに近いものをリストアップする。
             #パターンを作成する。
@@ -216,11 +215,6 @@ module EdinetDocument
                     line.encode(Encoding::UTF_8,Encoding::Windows_31J)
                 end
             end
-        end
-    
-        #リポジトリの絶対パスを計算する。
-        def repository_dir_path
-            File.dirname(File.dirname(File.dirname(File.expand_path(__FILE__))))
         end
     
         #表の描画のための関数を整理する。

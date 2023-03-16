@@ -523,4 +523,13 @@ irb(main):022:0> "あ".bytesize
 
 ---
 
+---
+
+追記：共通の処理の切り出し。
+
+EdinetDocument::ListViewerとEdinetDocument::DocumentViewerで使う処理をCommonモジュールに切り出す。  
+→確認できた。
+
+---
+
 

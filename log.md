@@ -532,4 +532,38 @@ EdinetDocument::ListViewerとEdinetDocument::DocumentViewerで使う処理をCom
 
 ---
 
+---
+
+#### 開発環境の変更
+
+開発環境としてRubyコンテナを使うとテストなどで使うパスなどを書きやすくなる。また、実行環境の移行などがしやすくなるので導入する。
+
+Debian系のほうが扱いになれているためbullseyeを選択。rubyのバージョンは、これまで通り3.1.3とする。そのためDockerHubのサイトで該当するコンテナを探す。
+
+- [Ruby｜dockerhub](https://hub.docker.com/_/ruby)
+
+```bash
+docker pull ruby:3.1.3-bullseye
+```
+
+これでコンテナイメージをダウンロードできた。次はコンテナを作るためのdocker-compose.ymlファイルを作る。
+
+必要な要素は以下。
+
+1. 一般ユーザーの追加。
+1. `/home/$USER`のディレクトリを追加して作業ディレクトリに設定。
+
+また、便利な書き方について以下が参考になった。
+- [【Docker】.envの環境変数をDockerfileで使用する - Qiita](https://qiita.com/P-man_Brown/items/6e2e6e98b19be33306e3)
+
+以下のコマンドでdocker buildなしでコンテナの生成ができる。
+
+```bash
+docker compose up -d --build
+```
+
+とりあえず最小の構成要素で作成した。必要に応じて随時追加する。
+
+---
+
 

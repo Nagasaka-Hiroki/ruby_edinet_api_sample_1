@@ -26,5 +26,5 @@ unzip S-XXXXXX.zip
 
 |Module#method|入力|出力|
 |-|-|-|
-|DocumentList#arrange_search_data|提出者名、探索期間|エディネットコードごとに分けた書類情報を配列で返却|
-|DocumentList#show_doc_info_table|提出者名、探索期間|DocumentList#arrange_search_dataの結果をターミナルに表示する。|
+|EdinetDocument::ListViewer#arrange_search_data|提出者名、探索期間|エディネットコードごとに分けた書類情報を配列で返却|
+|EdinetDocument::ListViewer#show_doc_info_table|提出者名、探索期間|EdinetDocument::ListViewer#arrange_search_dataの結果をターミナルに表示する。|

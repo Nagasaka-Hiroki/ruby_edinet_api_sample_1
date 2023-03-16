@@ -1,7 +1,7 @@
 require 'minitest/autorun'
 require 'date'
-require_relative '../lib/DocumentList/document_list'
-include DocumentList
+require_relative '../lib/EdinetDocument/list_viewer'
+include EdinetDocument::ListViewer
 
 #目視で確認。
 #ネットワークに接続するので頻繁に実行しないこと。

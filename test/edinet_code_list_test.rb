@@ -1,8 +1,8 @@
 #csvファイルを読み込むテスト
 require 'minitest/autorun'
 require 'debug'
-require_relative '../lib/DocumentList/document_list'
-include DocumentList
+require_relative '../lib/EdinetDocument/list_viewer'
+include EdinetDocument::ListViewer
 
 #エディネットコードの検索をテストする。
 class DocumentListTest < Minitest::Test

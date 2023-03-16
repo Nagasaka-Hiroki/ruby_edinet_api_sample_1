@@ -2,11 +2,11 @@ require 'minitest/autorun'
 require 'date'
 require 'json'
 require 'debug'
-require_relative '../lib/DocumentList/document_list'
-include DocumentList
+require_relative '../lib/EdinetDocument/list_viewer'
+include EdinetDocument::ListViewer
 
 #事前にダウンロードした内容を返すように設定したスタブの動作を確認する。
-class DocumentListTest < Minitest::Test
+class ListViewerTest < Minitest::Test
     #スタブでメソッドを呼び出す。
     def test_show_document_list
         date="2019-04-01"
@@ -16,8 +16,8 @@ class DocumentListTest < Minitest::Test
 
         #スタブでオーバーライドする。
         #本物の名前で偽物を呼び出せる。
-        DocumentList.stub :show_document_list, pseudo_show_document_list(date) do
-            @list=DocumentList.show_document_list(date)
+        EdinetDocument::ListViewer.stub :show_document_list, pseudo_show_document_list(date) do
+            @list=EdinetDocument::ListViewer.show_document_list(date)
         end
         pp @list #時間に依存する箇所があるのでここは目視で確認する。
     end
@@ -28,8 +28,8 @@ class DocumentListTest < Minitest::Test
         #日時の範囲を指定する。5日間のデータを対象にする。
         period=Range.new(Date.new(2019,4,1),Date.new(2019,4,5))
         #スタブでオーバーライドする。
-        DocumentList.stub :show_document_list_in_range, pseudo_show_document_list_in_range(period) do
-            @list=DocumentList.show_document_list_in_range(period)
+        EdinetDocument::ListViewer.stub :show_document_list_in_range, pseudo_show_document_list_in_range(period) do
+            @list=EdinetDocument::ListViewer.show_document_list_in_range(period)
         end
         pp @list #時間に依存する箇所があるのでここは目視で確認する。
     end
@@ -49,8 +49,8 @@ class DocumentListTest < Minitest::Test
     #ファイルを連続して読み込んでいく。
     def pseudo_show_document_list_in_range(period,type=1)
         period.map do |date|
-            DocumentList.stub :show_document_list, pseudo_show_document_list(date) do
-                DocumentList.show_document_list(date)
+            EdinetDocument::ListViewer.stub :show_document_list, pseudo_show_document_list(date) do
+                EdinetDocument::ListViewer.show_document_list(date)
             end
         end
     end

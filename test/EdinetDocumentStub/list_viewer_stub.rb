@@ -4,19 +4,19 @@
 require 'minitest/autorun'
 require 'date'
 require 'json'
-require_relative '../../lib/DocumentList/document_list'
+require_relative '../../lib/EdinetDocument/list_viewer'
 
-module DocumentListStub
+module ListViewerStub
     #モジュールを組み込む
-    include DocumentList
-    #DocumentList.show_document_list のスタブ
+    include EdinetDocument::ListViewer
+    #ListViewer.show_document_list のスタブ
     def stub_show_document_list(date,type=1,&block)
-        DocumentList.stub :show_document_list, pseudo_show_document_list(date,type), &block
+        EdinetDocument::ListViewer.stub :show_document_list, pseudo_show_document_list(date,type), &block
     end
 
-    #DocumentList.show_document_list_in_range のスタブ
+    #ListViewer.show_document_list_in_range のスタブ
     def stub_show_document_list_in_range(period,type=1,&block)
-        DocumentList.stub :show_document_list_in_range, pseudo_show_document_list_in_range(period,type), &block
+        EdinetDocument::ListViewer.stub :show_document_list_in_range, pseudo_show_document_list_in_range(period,type), &block
     end
 
     private
@@ -34,8 +34,8 @@ module DocumentListStub
     #ファイルを連続して読み込んでいく。
     def pseudo_show_document_list_in_range(period,type=1)
         period.map do |date|
-            DocumentList.stub :show_document_list, pseudo_show_document_list(date,type) do
-                DocumentList.show_document_list(date,type)
+            EdinetDocument::ListViewer.stub :show_document_list, pseudo_show_document_list(date,type) do
+                EdinetDocument::ListViewer.show_document_list(date,type)
             end
         end
     end

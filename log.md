@@ -507,4 +507,20 @@ irb(main):022:0> "あ".bytesize
 
 ---
 
+---
+
+#### モジュールの名前と名前空間の変更
+　書類取得APIの作成前にモジュールの名前空間の構成とモジュール名を変更する。
+
+以下のように変更する。
+
+|変更前|変更後|
+|-|-|
+|DocumentList|EdinetDocument::ListViewer|
+|DocumentViewer|EdinetDocument::DocumentViewer|
+
+テストコードも含めて変更した。またディレクトリ構造も名前空間に合わせて変更した。(以前の構造が適切でないと感じたので変更。)
+
+---
+
 

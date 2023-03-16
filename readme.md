@@ -3,6 +3,14 @@
 
 - [EDINET](https://disclosure2dl.edinet-fsa.go.jp/guide/static/disclosure/WZEK0110.html)
 
+## 環境について
+　動作環境と開発環境についてメモする。以下に示す。
+
+|項目|内容|
+|-|-|
+|OS|Ubuntu 22.04|
+|ruby|3.1.3|
+
 ## コマンドラインから使う。
 　例えば、書類管理番号`S-XXXXXX`の書類一式（zipファイル）を取得するには以下を実行する。
 

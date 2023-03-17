@@ -47,3 +47,12 @@ unzip S-XXXXXX.zip
 |-|-|-|
 |EdinetDocument::ListViewer#arrange_search_data|提出者名、探索期間|エディネットコードごとに分けた書類情報を配列で返却|
 |EdinetDocument::ListViewer#show_doc_info_table|提出者名、探索期間|EdinetDocument::ListViewer#arrange_search_dataの結果をターミナルに表示する。|
+
+### 書類取得API
+　Rubyで書類取得APIを使えるようにした。現状type=1のzipファイルのみ。とはいえpdfなどであればブラウザで検索したほうが早いのでxbrlファイルを取得目的としてとりあえずはこのままにする。以下に作成したモジュールの名前と機能について記述する。
+
+|Module#method|入力|出力|
+|-|-|-|
+|EdinetDocument::DocumentAcquisition::get_document|書類管理ID, 書類タイプ|指定の書類管理IDのファイルを取得する。デフォルトでタイプは１のzipファイルになる。|
+|EdinetDocument::DocumentAcquisition::arrange_zip_dir|書類管理ID|書類の取得(zip)から解凍、目的のxbrlファイルの移動などを複合的に行う。基本これを使う予定。|
+

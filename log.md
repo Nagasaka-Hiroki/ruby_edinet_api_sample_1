@@ -566,4 +566,27 @@ docker compose up -d --build
 
 ---
 
+### 書類取得API
+　書類一覧APIを使って書類管理番号のリストを入手できるようになった。この書類管理番号をもとに書類取得APIを使って書類を取得する。
 
+モジュールの機能としては書類一覧APIを駆動し、入手すべき書類を指定し、書類取得APIを実行、書類を入手する。
+
+書類の内容については別のモジュールで対応する。
+
+rubyモジュールでzipファイルを取得する場合、rubyのライブラリよりlinuxコマンドでダウンロードするほうが楽なのでそちらで実装する。
+
+ファイルの一覧が欲しいので調べた。
+
+- [Rubyでlsをする方法 - Qiita](https://qiita.com/kubocchi/items/433fb4ac0fc0502d67bf)
+
+Rubyでlsのようなものをするには上記をするそうだ。公式リファレンスを確認する。
+
+- [class Dir (Ruby 3.2 リファレンスマニュアル)](https://docs.ruby-lang.org/ja/latest/class/Dir.html#S_--5B--5D)
+
+正規表現のテストは以下でした。
+
+- [Rubular: a Ruby regular expression editor](https://rubular.com/)
+
+ひとまずこれで草案は完成。次はxbrlファイルの解析を行っていく予定。
+
+また、名称も変更。作った結果ビューアではなく取得になったので変更。変更内容はreadme.mdに記述する。

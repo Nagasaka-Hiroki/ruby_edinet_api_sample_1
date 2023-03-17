@@ -1,6 +1,7 @@
 *.zip
 XBRL/
 zips/
+downloads/
 http_dummy/*.json
 code_list/*.zip
 code_list/*.csv

@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  ruby:
+    container_name: xbrl_parser
+    image: python-bullseye:3.11.2
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        - GROUP_NAME=${GROUP_NAME}
+        - USER_NAME=${USER_NAME}
+        - WORK_DIR=${WORK_DIR}
+        - USER_ID=${USER_ID}
+        - GROUP_ID=${GROUP_ID}
+    user: "user01"
+    volumes:
+      - type: bind
+        source: ./
+        target: ${WORK_DIR}
+    restart: "no"
+    tty: true
+    working_dir: ${WORK_DIR}

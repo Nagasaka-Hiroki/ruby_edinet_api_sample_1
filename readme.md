@@ -56,3 +56,5 @@ unzip S-XXXXXX.zip
 |EdinetDocument::DocumentAcquisition::get_document|書類管理ID, 書類タイプ|指定の書類管理IDのファイルを取得する。デフォルトでタイプは１のzipファイルになる。|
 |EdinetDocument::DocumentAcquisition::arrange_zip_dir|書類管理ID|書類の取得(zip)から解凍、目的のxbrlファイルの移動などを複合的に行う。基本これを使う予定。|
 
+### XBRLファイルの解析
+　すでにPythonには解析に関するものがあるそうだ。とりあえず仕様をしっかりと読んでまず自分で作ってみる（学習が目的なので）。それに伴って上記までのコードも変更の必要があれば変更していく。（進捗に合わせてここの文章は変更する）

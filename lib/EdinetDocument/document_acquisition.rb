@@ -32,13 +32,13 @@ module EdinetDocument
             #解凍がまだの場合は解答する。
             unzip_zipfile(docID) unless Dir.exist?("#{DOWNLOADS_PATH}/#{docID}")
             #ファイルの移動がされていない場合は移動する。
-            move_file(docID) unless File.exist?("#{DOWNLOADS_PATH}/#{docID}-1.xbrl")
+            move_file(docID) unless File.exist?("#{DOWNLOADS_PATH}/#{docID}-0.xbrl")
         end
 
         private
         #xbrlファイルの名前を取得する。
         def xbrl_file_name(path)
-            pattern=%r{\.xbrl} #拡張子のパターンを記述。
+            pattern=%r{\.xbrl$} #拡張子のパターンを記述。
             #ファイルの一覧を取得する。
             file_list=Dir.glob("#{path}/*")
             #xbrlの拡張子のファイルがあるか確認する。

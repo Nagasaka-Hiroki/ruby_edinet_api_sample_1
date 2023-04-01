@@ -14,8 +14,23 @@ ARG USER_NAME
 RUN groupadd -g ${GROUP_ID} ${GROUP_NAME} \
  && useradd -m -s /bin/bash -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME}
 
+#GUI環境を有効にするためのツールをインストールする。
+RUN apt-get update && apt-get upgrade -y \
+ && apt-get install python3-tk tk-dev -y
+
+#ツールを追加する。
+RUN apt-get update && apt-get upgrade -y \
+ && apt-get install curl git -y
+
 #ユーザを切り替える。
 USER ${USER_NAME}
+
+#外部ライブラリをインストールする。
+RUN pip install --upgrade pip \
+ && pip install numpy \
+ && pip install matplotlib \
+ && pip install arelle-release
+
 #作業ディレクトリをホームに設定する。
 WORKDIR ${WORK_DIR}
 

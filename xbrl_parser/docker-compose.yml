@@ -2,7 +2,7 @@ version: "3.9"
 services:
   ruby:
     container_name: xbrl_parser
-    image: python-bullseye:3.11.2
+    image: python3.11.2-bullseye:edinet
     build:
       context: ./
       dockerfile: Dockerfile

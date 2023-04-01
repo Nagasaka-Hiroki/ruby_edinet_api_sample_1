@@ -41,3 +41,27 @@ docker compose up -d --build
 Pythonの練習として以下を読む。
 
 - [Python チュートリアル — Python 3.11.2 ドキュメント](https://docs.python.org/ja/3/tutorial/index.html)
+
+arelleは以下だと思われる。
+
+- [arelle-release · PyPI](https://pypi.org/project/arelle-release/)
+- [GitHub - Arelle/Arelle: Arelle open source XBRL platform](https://github.com/Arelle/Arelle)
+
+古い？ものは次。
+
+- [arelle · PyPI](https://pypi.org/project/arelle/)
+
+上記については以下のブログで紹介されている。
+
+- [ゼロから始めないXBRL解析(Arelleの活用) - Qiita](https://qiita.com/xtarou/items/fb3cc72b1b600b4309db)
+
+少し古い記事なのでその影響かもしれない。
+
+とりあえず[arelle-release · PyPI](https://pypi.org/project/arelle-release/)を使う。
+
+Dockerfileを作り直して使えるようにする。
+
+使い方などのドキュメントは以下を参照。
+- [arelle®](https://arelle.org/arelle/)
+
+

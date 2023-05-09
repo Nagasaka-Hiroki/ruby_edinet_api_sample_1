@@ -5,3 +5,6 @@ downloads/
 http_dummy/*.json
 code_list/*.zip
 code_list/*.csv
+xbrl_parser/*.zip
+xbrl_parser/*.csv
+xbrl_parser/S100Q71I

@@ -65,3 +65,40 @@ Dockerfileを作り直して使えるようにする。
 - [arelle®](https://arelle.org/arelle/)
 
 
+## 作業再開
+　一時作業を中断していた。作業を再開する。
+
+1. [2023年版EDINETタクソノミの公表について：金融庁](https://www.fsa.go.jp/search/20221108.html)
+
+arelleとxbrlのファイルを読んだところ。arelle側にタグ（xbrl的にはタクソノミ）は定義されていないようだ。なので、タクソノミ一覧はEDINET側の仕様書を読み込むと出てくるかもしれない。
+
+- [EDINET](https://disclosure2dl.edinet-fsa.go.jp/guide/static/disclosure/WZEK0110.html)
+
+上記の中から以下を確認した。
+
+1. タクソノミ要素リスト
+1. 勘定科目リスト
+1. 国際会計基準タクソノミ要素リスト
+
+このリストを読むとブログに書かれていた`FilerNameInJapaneseDEI`があったので、これを参照すればいいと思う。
+
+しかし、以下が不明。
+
+```python
+cntrl=Cntlr.Cntlr()
+model_manager=ModelManager.initialize(cntrl)
+model_xbrl=model_manager.load(filename)
+
+for fact in model_xbrl.facts: #<ーここの部分
+    print(fact.value)
+```
+
+タクソノミがわかったので、コードを読む。
+
+1. [Arelle/ModelXbrl.py at 1f46df71ee985237b9297c31ad72cc9322a5e262 · Arelle/Arelle · GitHub](https://github.com/Arelle/Arelle/blob/1f46df71ee985237b9297c31ad72cc9322a5e262/arelle/ModelXbrl.py#L202)
+
+ここにfactsが書いている。
+
+factsの中身についてはリストになっていて、配列の要素は`ModelFact`クラスになっている。なので`value`で値を取り出せる。以下参照。
+
+1. [Arelle/ModelInstanceObject.py at 1f46df71ee985237b9297c31ad72cc9322a5e262 · Arelle/Arelle · GitHub](https://github.com/Arelle/Arelle/blob/1f46df71ee985237b9297c31ad72cc9322a5e262/arelle/ModelInstanceObject.py#LL363C28-L363C28)

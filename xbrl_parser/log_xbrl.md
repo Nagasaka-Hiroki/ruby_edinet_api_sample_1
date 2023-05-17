@@ -102,3 +102,20 @@ for fact in model_xbrl.facts: #<ーここの部分
 factsの中身についてはリストになっていて、配列の要素は`ModelFact`クラスになっている。なので`value`で値を取り出せる。以下参照。
 
 1. [Arelle/ModelInstanceObject.py at 1f46df71ee985237b9297c31ad72cc9322a5e262 · Arelle/Arelle · GitHub](https://github.com/Arelle/Arelle/blob/1f46df71ee985237b9297c31ad72cc9322a5e262/arelle/ModelInstanceObject.py#LL363C28-L363C28)
+
+---
+
+一度Python APIの公式ドキュメントを読んで整理した。以下に示す。
+1. [ API, Python](https://arelle.org/arelle/documentation/api/)
+1. [ruby_edinet_api_sample_1/check_python_api.md at topic_xbrl_parser · Nagasaka-Hiroki/ruby_edinet_api_sample_1 · GitHub](https://github.com/Nagasaka-Hiroki/ruby_edinet_api_sample_1/blob/topic_xbrl_parser/xbrl_parser/check_python_api.md)
+
+読んだ感想として、どうやら`CntlrCmdLine.py`にサンプル的な内容が書かれているそうなのでそれを確認する。（独習Pythonも読んだが、`main`関数にモジュールなどのサンプルコードが書かれているそうなのでそこを重点的に読むといいかもしれない）
+
+- [Arelle/CntlrCmdLine.py at master · Arelle/Arelle · GitHub](https://github.com/Arelle/Arelle/blob/master/arelle/CntlrCmdLine.py)
+
+上記の`def main`のところがサンプルになっているはず。（→長いので要点を抑えることを意識して読まないとだめなのが注意点）
+
+また、結局モデルマネージャーがキモになっていると思うのでそのクラスをしっかりと読む。これを次の目標とする（もちろん並行してEDINET側の仕様も確認する）
+- [Arelle/ModelManager.py at master · Arelle/Arelle · GitHub](https://github.com/Arelle/Arelle/blob/master/arelle/ModelManager.py)
+
+---
